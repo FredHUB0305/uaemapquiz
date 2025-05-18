@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UAE MAP Quiz Game</title>
+  <style>
+    body {
+      font-family: 'Arial Rounded MT Bold', sans-serif;
+      background: linear-gradient(to right, #fceabb, #f8b500);
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background-color: #f7a600;
+      color: white;
+      padding: 20px;
+    }
+    .avatar-selection, .quiz-container, .score-screen {
+      display: none;
+      padding: 20px;
+    }
+    .avatar-selection.active, .quiz-container.active, .score-screen.active {
+      display: block;
+    }
+    .avatars {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .avatar {
+      border: 3px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.3s;
+      width: 100px;
+    }
+    .avatar:hover {
+      transform: scale(1.1);
+    }
+    .avatar.selected {
+      border-color: #ff9800;
+    }
+    .question-box {
+      background: #fffbe6;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 600px;
+      border-radius: 10px;
+    }
+    button {
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #f57c00;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>UAE MAP-Style Quiz Game</h1>
+    <p>Select an Avatar to Begin!</p>
+  </header>
+
+  <div class="avatar-selection active" id="avatarSelect">
+    <div class="avatars">
+      <img src="https://i.imgur.com/2pLoaYU.png" alt="Alien" class="avatar" data-avatar="Alien" />
+      <img src="https://i.imgur.com/4jlQfsh.png" alt="Dino" class="avatar" data-avatar="Dino" />
+      <img src="https://i.imgur.com/6oK4Ybp.png" alt="Puppy" class="avatar" data-avatar="Puppy" />
+      <img src="https://i.imgur.com/IEbE4K8.png" alt="Cat" class="avatar" data-avatar="Cat" />
+      <img src="https://i.imgur.com/f06X4ep.png" alt="Game Hero" class="avatar" data-avatar="GameHero" />
+    </div>
+    <button onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="question-box" id="questionBox">
+      <h2 id="questionText">Question will appear here</h2>
+      <div id="options"></div>
+      <button onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <div class="score-screen" id="scoreScreen">
+    <h2>🎉 Quiz Complete!</h2>
+    <p id="finalScore"></p>
+    <button onclick="location.reload()">Play Again</button>
+  </div>
+
+  <script>
+    const avatars = document.querySelectorAll('.avatar');
+    let selectedAvatar = '';
+    avatars.forEach(avatar => {
+      avatar.addEventListener('click', () => {
+        avatars.forEach(av => av.classList.remove('selected'));
+        avatar.classList.add('selected');
+        selectedAvatar = avatar.dataset.avatar;
+      });
+    });
+
+    const questions = [
+      {
+        question: "What is the capital of the UAE?",
+        options: ["Sharjah", "Dubai", "Abu Dhabi", "Ajman"],
+        answer: "Abu Dhabi"
+      },
+      {
+        question: "Which animal is a symbol of the UAE desert?",
+        options: ["Camel", "Horse", "Falcon", "Cheetah"],
+        answer: "Camel"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function startQuiz() {
+      if (!selectedAvatar) {
+        alert("Please select an avatar!");
+        return;
+      }
+      document.getElementById('avatarSelect').classList.remove('active');
+      document.getElementById('quizContainer').classList.add('active');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById('questionText').textContent = q.question;
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => {
+          if (opt === q.answer) {
+            score += 10;
+            btn.style.background = 'green';
+          } else {
+            btn.style.background = 'red';
+          }
+          document.querySelectorAll('#options button').forEach(b => b.disabled = true);
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        document.getElementById('quizContainer').classList.remove('active');
+        document.getElementById('scoreScreen').classList.add('active');
+        document.getElementById('finalScore').textContent = `You scored ${score} points, ${selectedAvatar}!`;
+      }
+    }
+  </script>
+</body>
+</html>
